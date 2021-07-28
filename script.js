@@ -4,9 +4,9 @@ let compareBt = document.getElementById("compareBt");
 const imgNum = 1; // The orginal pictures number limit.
 
 Promise.all([
-    faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-    faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-    faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
+    faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
+    faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
+    faceapi.nets.ssdMobilenetv1.loadFromUri('./models')
 ]).then(start)
 
 async function start() {
@@ -68,7 +68,7 @@ async function start() {
 // When we need to do the person identification, front-end may fetch specific pictures according to the person name or number.
 function loadLabeledImages() {
     // These labels can be the specific student name or student number from the database
-    // In the 1 label, there can be several pictures of a person
+    // In the 1 label, there can be several pictures of a person.
     const labels = ['person1_name']
     
     return Promise.all(
