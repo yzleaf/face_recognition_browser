@@ -1,7 +1,7 @@
 let video = document.getElementById("video");
 let compareBt = document.getElementById("compareBt");
-// let canvas = document.getElementById("canvas");
-const imgNum = 1;
+
+const imgNum = 1; // The orginal pictures number limit.
 
 Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
@@ -10,20 +10,22 @@ Promise.all([
 ]).then(start)
 
 async function start() {
-   
+    
+    /* 1. Get the camera permission and video stream */
     setupCamera()
 
     const container = document.createElement('div')
     container.style.position = 'relative'
     document.body.append(container)
 
-
+    /* 2. Get the person original pictures */
     const labeledFaceDescriptors = await loadLabeledImages()
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
 
     let canvas
     let canvas2
 
+    /* 3. Make comparison to do the recognition */
     compareBt.addEventListener('click', async () => {
         
         if (canvas) canvas.remove()
@@ -38,15 +40,16 @@ async function start() {
         canvas2.style.position = 'absolute'
         container.append(canvas2)
 
-        // const displaySize = { width: video.width, height: video.height }
+        // Resize the canvas
         const displaySize = { width: 600, height: 400 }
-        faceapi.matchDimensions(canvas2, displaySize) // resize the canvas
+        faceapi.matchDimensions(canvas2, displaySize) 
 
+        // Detect face features in front of the camera and do the recognition
         const detections = await faceapi.detectAllFaces(video).withFaceLandmarks().withFaceDescriptors()
         const resizedDetections = faceapi.resizeResults(detections, displaySize)
         const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
-        // console.log(results)
-
+        
+        // Plot the recognition result
         results.forEach((result, i) => {
             const box = resizedDetections[i].detection.box
             const drawBox = new faceapi.draw.DrawBox(box, { label: result.label })
@@ -59,15 +62,20 @@ async function start() {
 };
 
 
+/* Read original face pictures of the person */
+
+// These pictures can be record in the database in advance.
+// When we need to do the person identification, front-end may fetch specific pictures according to the person name or number.
 function loadLabeledImages() {
-    // These labels can be student name or number from the database
-    // We should get specific images according to the name or student number
+    // These labels can be the specific student name or student number from the database
+    // In the 1 label, there can be several pictures of a person
     const labels = ['person1_name']
+    
     return Promise.all(
         // go through all labels
         labels.map(async label => {
             const descriptions = []
-            for (let i = 1; i <= imgNum; i++) {
+            for (let i = 1; i <= imgNum; i++) { // student face pictures
                 const img = await faceapi.fetchImage(`./labeled_images/${label}/${i}.jpg`)
                 const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
                 descriptions.push(detections.descriptor)
