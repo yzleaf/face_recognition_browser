@@ -4,10 +4,9 @@ const imgNum = 1; // The orginal pictures number limit.
 
 let video = document.getElementById("video");
 let compareBt = document.getElementById("compareBt");
-let result = document.getElementById('result')
 
-let person_ID = 'person1_name'
-let result_val_recognition = NOT_MATCH;
+let person_ID = 'person1_name'; // student ID or person name
+let result_val_recognition = NOT_MATCH; // initalize the recognition result
 
 Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
@@ -63,12 +62,12 @@ async function start() {
 
             // return the result whether this is the same person
             if (result.label == person_ID) {
-                result_val_recognition = MATCH;
+                result_val_recognition = MATCH
             } else if (result.label == 'unknown') {
-                result_val_recognition = NOT_MATCH;
+                result_val_recognition = NOT_MATCH
             }
-
-            result.innerHTML = "Result: " + result_val_recognition
+            
+            alert("Result:" + result_val_recognition)
         })
 
     })
@@ -84,7 +83,8 @@ async function start() {
 function loadLabeledImages() {
     // These labels can be the specific student name or student number from the database
     // In the 1 label, there can be several pictures of a person.
-    const labels = ['person1_name']
+    // const labels = ['person1_name']
+    const labels = [person_ID]
     
     return Promise.all(
         // go through all labels
