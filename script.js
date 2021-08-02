@@ -1,7 +1,13 @@
+const MATCH = 1;
+const NOT_MATCH = 0;
+const imgNum = 1; // The orginal pictures number limit.
+
 let video = document.getElementById("video");
 let compareBt = document.getElementById("compareBt");
+let result = document.getElementById('result')
 
-const imgNum = 1; // The orginal pictures number limit.
+let person_ID = 'person1_name'
+let result_val_recognition = NOT_MATCH;
 
 Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
@@ -54,6 +60,15 @@ async function start() {
             const box = resizedDetections[i].detection.box
             const drawBox = new faceapi.draw.DrawBox(box, { label: result.label })
             drawBox.draw(canvas2)
+
+            // return the result whether this is the same person
+            if (result.label == person_ID) {
+                result_val_recognition = MATCH;
+            } else if (result.label == 'unknown') {
+                result_val_recognition = NOT_MATCH;
+            }
+
+            result.innerHTML = "Result: " + result_val_recognition
         })
 
     })
